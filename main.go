@@ -4,27 +4,34 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-	"github.com/jeysson/golang-api/handlers"
+	"github.com/jeysson/golang-api/config"
+	"github.com/jeysson/golang-api/routes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func main() {
-	router := mux.NewRouter()
-
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
-		log.Fatal("failed to connect database")
+		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	handlers.Init(db)
+	loadPort, err2 := config.LoadConfig("app.json")
 
-	router.HandleFunc("/todos", handlers.GetTodos).Methods("GET")
-	router.HandleFunc("/todos", handlers.CreateTodo).Methods("POST")
-	router.HandleFunc("/todos/{id}", handlers.GetTodoByID).Methods("GET")
-	router.HandleFunc("/todos/{id}", handlers.UpdateTodo).Methods("PUT")
-	router.HandleFunc("/todos/{id}", handlers.DeleteTodo).Methods("DELETE")
+	if err2 != nil {
+		log.Fatalf("Erro ao carregar configuração: %v", err2)
+	}
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	// criação da instância de App
+	// Creating App instance
+	app := &config.App{DB: db}
+
+	// Inicialização das rotas
+	// Routes initializing
+	router := routes.InitRoutes(app)
+
+	log.Printf("Iniciando o servidor na porta %s...\n", loadPort.Port)
+	if err := http.ListenAndServe(":"+loadPort.Port, router); err != nil {
+		log.Fatalf("Erro ao iniciar o servidor: %v\n", err)
+	}
 }
