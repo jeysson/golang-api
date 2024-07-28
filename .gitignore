@@ -1,0 +1,38 @@
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build artifacts
+*.test
+*.out
+
+# Dependency directories (remove the comment below if you want to include them)
+# vendor/
+
+# Go Modules files
+go.sum
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# MacOS specific files
+.DS_Store
+
+# Linux specific files
+*.pid
+*.seed
+*.pid.lock
+
+# Windows specific files
+Thumbs.db
+Desktop.ini
